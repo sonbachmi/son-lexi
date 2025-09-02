@@ -1,12 +1,18 @@
 from datetime import datetime
 from typing import Optional, List
 
-from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+import httpx
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse
 
 app_title = "Son's Lexi Demo API"
 version = "0.1.0"
-app = FastAPI(title=app_title, version=version)
+
+
+class State(BaseModel):
+    id: int
+    name: str
 
 
 class Case(BaseModel):
@@ -20,8 +26,39 @@ class Case(BaseModel):
     document_link: str
 
 
-# In-memory "database"
-DB: dict[int, Case] = {}
+class ApiException(Exception):
+    def __init__(self, name: str, message: str):
+        self.name = name
+        self.message = message
+
+
+jagriti_api_url = 'https://e-jagriti.gov.in'
+headers = {
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 '
+                  'Safari/537.36'
+}
+
+async def fetch_states() -> list[State]:
+    """
+    Fetches states from Jagriti API and returns it.
+    """
+    response = httpx.get(jagriti_api_url + "/services/report/report/getStateCommissionAndCircuitBench",
+                         headers=headers)
+    response.raise_for_status()  # Raises an exception for 4xx/5xx responses
+    states = [State(id=item['commissionId'], name=item['commissionNameEn'])
+              for item in response.json()['data']]
+    return states
+
+
+app = FastAPI(title=app_title, version=version)
+
+
+@app.exception_handler(ApiException)
+async def app_exception_handler(request: Request, e: ApiException):
+    return JSONResponse(
+        status_code=500,
+        content={"code": e.name, "message": e.message},
+    )
 
 
 @app.get("/", tags=["system"])
@@ -30,40 +67,15 @@ def about() -> dict:
             "version": version}
 
 
-@app.get("/cases", response_model=list[Case], tags=["Cases"])
+@app.get("/cases", response_model=list[Case], tags=["cases"])
 def list_cases() -> list[Case]:
     return list(DB.values())
 
 
-@app.get("/cases/{case_id}", response_model=Case, tags=["Cases"])
-def get_case(case_id: int) -> Case:
-    case = DB.get(case_id)
-    if not case:
-        raise HTTPException(status_code=404, detail="Case not found")
-    return case
-
-
-@app.post("/cases", response_model=Case, status_code=201, tags=["Cases"])
-def create_case(case: Case) -> Case:
-    if case.id in DB:
-        raise HTTPException(status_code=409, detail="Case with this id already exists")
-    DB[case.id] = case
-    return case
-
-
-@app.put("/cases/{case_id}", response_model=Case, tags=["Cases"])
-def update_case(case_id: int, case: Case) -> Case:
-    if case_id != case.id:
-        raise HTTPException(status_code=400, detail="Path id and body id must match")
-    if case_id not in DB:
-        raise HTTPException(status_code=404, detail="Case not found")
-    DB[case_id] = case
-    return case
-
-
-@app.delete("/cases/{case_id}", status_code=204, tags=["Cases"])
-def delete_case(case_id: int) -> None:
-    if case_id not in DB:
-        raise HTTPException(status_code=404, detail="Case not found")
-    del DB[case_id]
-    return None
+@app.get("/states", response_model=list[State], tags=["states"])
+async def get_states() -> list[State]:
+    try:
+        return await fetch_states()
+    except Exception as e:
+        raise ApiException(name='fetchError',
+                           message=F"Error fetching from API: {e}")
