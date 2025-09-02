@@ -1,0 +1,9 @@
+// For JetBrains IDE: HTTP requests to test API
+
+### GET about
+GET http://localhost:8000
+
+### GET cases
+GET http://localhost:8000/cases
+
+###
