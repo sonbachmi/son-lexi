@@ -6,13 +6,10 @@ GET http://localhost:8000
 ### GET cases
 GET http://localhost:8000/cases
 
-###
 ### GET states
 GET http://localhost:8000/states
 
-###
-###
-### GET commissions
-GET http://localhost:8000/commissions/11350000
+### GET commissions by state
+GET http://localhost:8000/commissions/113500001
 
 ###

@@ -6,10 +6,17 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from jagriti import fetch_states, fetch_commissions, State, Commission, Case, JagritiError
+from jagriti import (
+    fetch_states,
+    fetch_commissions,
+    State,
+    Commission,
+    Case,
+    JagritiError,
+)
 
 app_title = "Son's Lexi Demo API"
-version = "0.1.0"
+version = '0.1.0'
 
 
 class ApiException(Exception):
@@ -26,7 +33,7 @@ app = FastAPI(title=app_title, version=version)
 async def app_exception_handler(request: Request, e: ApiException):
     return JSONResponse(
         status_code=e.status_code,
-        content={"code": e.name, "message": e.message},
+        content={'code': e.name, 'message': e.message},
     )
 
 
@@ -39,47 +46,48 @@ async def http_exception_handler(request, e):
 async def validation_exception_handler(request, e):
     error = e.errors()[0]
     if error['loc'][1] == 'state_id':
-        raise ApiException(name='invalidId',
-                           message='State ID must be an integer',
-                           status_code=400)
+        raise ApiException(
+            name='invalidId', message='State ID must be an integer', status_code=400
+        )
     return JSONResponse(
         status_code=400,
-        content=jsonable_encoder({"detail": e.errors()}),
+        content=jsonable_encoder({'detail': e.errors()}),
     )
 
 
-@app.get("/", tags=["system"])
+@app.get('/', tags=['system'])
 def about() -> dict:
-    return {"app": app_title,
-            "version": version}
+    return {'app': app_title, 'version': version}
 
 
-@app.get("/cases", response_model=list[Case], tags=["cases"])
+@app.get('/cases', response_model=list[Case], tags=['cases'])
 def list_cases() -> list[Case]:
     return []
 
 
-@app.get("/states", response_model=list[State], tags=["states"])
+@app.get('/states', response_model=list[State], tags=['states'])
 async def get_states() -> list[State]:
     try:
         return await fetch_states()
     except JagritiError as e:
-        raise ApiException(name=e.name,
-                           message=e.message)
+        raise ApiException(name=e.name, message=e.message)
     except Exception as e:
-        raise ApiException(name='fetchError',
-                           message=f"Error getting states: {e}")
+        raise ApiException(name='fetchError', message=f'Error getting states: {e}')
 
 
-@app.get("/commissions/{state_id}", response_model=list[Commission], tags=["commissions"])
-async def get_commissions_by_state(state_id: Annotated[int, Path(title="The ID of the state to get commissions from")]) \
-        -> list[Commission]:
+@app.get(
+    '/commissions/{state_id}', response_model=list[Commission], tags=['commissions']
+)
+async def get_commissions_by_state(
+    state_id: Annotated[int, Path(title='The ID of the state to get commissions from')],
+) -> list[Commission]:
     try:
         return await fetch_commissions(state_id)
     except JagritiError as e:
-        raise ApiException(name=e.name,
-                           message=e.message,
-                           status_code=400 if e.name == 'notFound' else 500)
+        raise ApiException(
+            name=e.name,
+            message=e.message,
+            status_code=400 if e.name == 'notFound' else 500,
+        )
     except Exception as e:
-        raise ApiException(name='fetchError',
-                           message=f"Error getting states: {e}")
+        raise ApiException(name='fetchError', message=f'Error getting states: {e}')
