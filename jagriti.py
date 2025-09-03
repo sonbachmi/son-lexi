@@ -72,7 +72,7 @@ async def fetch_states() -> list[State]:
 stored_commissions_by_state: dict[int, list[Commission]] = {}
 
 
-async def fetch_commissions(state_id: int) -> list[Commission]:
+async def fetch_commissions_by_state(state_id: int) -> list[Commission]:
     """
     Fetches commissions of a state from Jagriti API and returns it.
     """
@@ -108,3 +108,34 @@ async def fetch_commissions(state_id: int) -> list[Commission]:
     ]
     stored_commissions_by_state[state_id] = commissions
     return commissions
+
+
+async def get_state_by_id(state_id: int) -> State | None:
+    states = [s for s in await fetch_states() if s.id == state_id]
+    return states[0] if len(states) > 0 else None
+
+
+async def get_state_by_name(state_name: str) -> State | None:
+    states = [
+        s for s in await fetch_states() if s.name.lower() == state_name.strip().lower()
+    ]
+    # Replace with below for non-exact (inclusion) text matching
+    # states = [s for s in await fetch_states() if state_name.strip().lower() in s.name.lower()]
+    return states[0] if len(states) > 0 else None
+
+
+async def get_commission_by_name(
+    commission_name: str, state_id: int
+) -> Commission | None:
+    state = await get_state_by_id(state_id)
+    if state is None:
+        return None
+    commissions = [
+        c
+        for c in await fetch_commissions_by_state(state_id)
+        if c.name.lower() == commission_name.strip().lower()
+    ]
+    # Replace with below for non-exact (inclusion) text matching
+    # commissions = [c for c in await fetch_commissions_by_state(state_id)
+    #       if commission_name.strip().lower() in c.name.lower()]
+    return commissions[0] if len(commissions) > 0 else None

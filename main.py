@@ -8,7 +8,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from jagriti import (
     fetch_states,
-    fetch_commissions,
+    fetch_commissions_by_state,
     State,
     Commission,
     Case,
@@ -82,7 +82,7 @@ async def get_commissions_by_state(
     state_id: Annotated[int, Path(title='The ID of the state to get commissions from')],
 ) -> list[Commission]:
     try:
-        return await fetch_commissions(state_id)
+        return await fetch_commissions_by_state(state_id)
     except JagritiError as e:
         raise ApiException(
             name=e.name,
