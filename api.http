@@ -3,13 +3,78 @@
 ### GET about
 GET http://localhost:8000
 
-### GET cases
-GET http://localhost:8000/cases
-
 ### GET states
 GET http://localhost:8000/states
 
 ### GET commissions by state
-GET http://localhost:8000/commissions/113500001
+GET http://localhost:8000/commissions/11110000
 
-###
+### POST search cases by case number
+POST http://localhost:8000/cases/by_case_number
+Content-Type: application/json
+
+{
+  "state_name": "Karnataka",
+  "commission_name": "Bangalore 1st & Rural Additional",
+  "query": "DC/AB4/525/CC/89/2025"
+}
+
+### POST search cases by complainant
+POST http://localhost:8000/cases/by_complainant
+Content-Type: application/json
+
+{
+  "state_name": "Karnataka",
+  "commission_name": "Bangalore 1st & Rural Additional",
+  "query": "Reddy"
+}
+
+### POST search cases by complainant advocate
+POST http://localhost:8000/cases/by_complainant_advocate
+Content-Type: application/json
+
+{
+  "state_name": "Andhra Pradesh",
+  "commission_name": "Anantapur",
+  "query": "SREEH"
+}
+
+### POST search cases by respondent
+POST http://localhost:8000/cases/by_respondent
+Content-Type: application/json
+
+{
+  "state_name": "Andhra Pradesh",
+  "commission_name": "Anantapur",
+  "query": "tvs"
+}
+
+### POST search cases by respondent advocate
+POST http://localhost:8000/cases/by_respondent_advocate
+Content-Type: application/json
+
+{
+  "state_name": "Andhra Pradesh",
+  "commission_name": "Anantapur",
+  "query": "SREEH"
+}
+
+### POST search cases by industry type
+POST http://localhost:8000/cases/by_industry_type
+Content-Type: application/json
+
+{
+  "state_name": "Andhra Pradesh",
+  "commission_name": "Anantapur",
+  "query": "housing"
+}
+
+### POST search cases by judge
+POST http://localhost:8000/cases/by_judge
+Content-Type: application/json
+
+{
+  "state_name": "Andhra Pradesh",
+  "commission_name": "Anantapur",
+  "query": "sree"
+}
