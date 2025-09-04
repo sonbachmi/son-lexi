@@ -7,7 +7,7 @@ GET http://localhost:8000
 GET http://localhost:8000/states
 
 ### GET commissions by state
-GET http://localhost:8000/commissions/11110000
+GET http://localhost:8000/commissions/11110000a
 
 ### POST search cases by case number
 POST http://localhost:8000/cases/by_case_number
@@ -16,7 +16,7 @@ Content-Type: application/json
 {
   "state_name": "Karnataka",
   "commission_name": "Bangalore 1st & Rural Additional",
-  "query": "DC/AB4/525/CC/89/2025"
+  "query2": "DC/AB4/525/CC/89/2025"
 }
 
 ### POST search cases by complainant
