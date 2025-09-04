@@ -41,9 +41,10 @@ All endpoints require 3 parameters in request body:
 The date range is set from start of this year (Jagriti UI's default) to current day.
 
 The `document_link` field is always set to an empty string, since Jagriti API only returns the document as
-embedded Base64-encoded string.
+embedded Base64-encoded string instead of any URL.
 
 ---
+
 For more technical details, refer to [Readme](https://github.com/sonbachmi/son-lexi/blob/main/README.md) in codebase.
 
 """
@@ -183,6 +184,14 @@ async def get_commissions_by_state(
 
 
 class SearchCasesRequest(BaseModel):
+    """
+        Model for search criteria to pass via request body.
+
+        Attributes:
+            state_name: The state name to search in (exact case-insensitive matching).
+            commission_name: The commission name to search in (exact case-insensitive matching).
+            query: The search value as string (exact case-insensitive matching, except case number).
+    """
     state_name: str
     commission_name: str
     query: str
@@ -194,10 +203,10 @@ async def handle_search_cases_by_type(
     """
     Common function to search for cases from Jagriti API.
 
-    Acts as FastAPI path operation, to be used by all endpoints below.
+    Acts as a FastAPI path operation, to be used by all endpoints below.
 
     Parameters:
-        request (SearchCasesRequest): The request body containing search data.
+        request (SearchCasesRequest): The request body containing search criteria, see model above.
         search_type (SearchType): The type of search to perform, as defined by Jagriti API.
 
     Returns:
@@ -216,6 +225,8 @@ async def handle_search_cases_by_type(
             message='Missing commission name',
             status_code=422,
         )
+    # Comment out the following block to allow an empty search value, which will retrieve from Jagriti API
+    # a full list of cases without filtering. It is not allowed by Jagriti UI though, so use it for testing only.
     if len(request.query) == 0:
         raise ApiException(
             name='emptyData',
@@ -271,8 +282,12 @@ async def search_cases_by_industry_type(request: SearchCasesRequest) -> list[Cas
     """
     Search cases by industry type.
 
-    Jagriti API appears to ignore the search value and always return an empty list,
-    though a likely bug in the portal UI still displays results from the previous search.
+    The Jagriti API and portal UI do not appear to function correctly for this search type.
+
+    The API ignores the search value and always returns an empty list,
+    while the UI apparently ignores this result and displays stale results from the previous search instead.
+
+    As a result, this endpoint always returns an empty list.
     """
     return await handle_search_cases_by_type(request, SearchType.INDUSTRY_TYPE)
 

@@ -195,11 +195,12 @@ async def search_cases_by_type(
     state_name: str, commission_name: str, query: str, search_type: SearchType
 ) -> list[Case]:
     """
-    Search cases from Jagriti API based on search type and value.
+    Search cases from Jagriti API based on state, commission, search type and value.
 
     Parameters:
         state_name (str): Name of the state to search in. Must be exact but case-insensitive.
         commission_name (str): Name of the commission to search in. Must be exact but case-insensitive.
+        query (str): The string value to search for, using non-exact case-insensitive matching (except case number).
         search_type (SearchType): Type of search to perform.
     """
 
@@ -225,9 +226,10 @@ async def search_cases_by_type(
             'judge list',
             'POST',
         )
-        judges = [j for j in data if query.lower() in j['judgesNameEn'].lower()]
-        if len(judges) > 0:
-            judge_id = judges[0]['judgeId']
+        judges = [j for j in data if query.strip().lower() in j['judgesNameEn'].lower()]
+        if len(judges) == 0:
+            return []
+        judge_id = judges[0]['judgeId']
 
     # Build payload for API call.
     data = {

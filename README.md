@@ -13,11 +13,13 @@ Developed under Python 3.12
 - `jagriti.py`: Module for fetching and manage data from Jagriti API
 - `main.py`: FastAPI application using Jagriti module for data
 
-Documentation is added intensively in code, and also displayed by the API doc.
+Documentation is added intensively in code, and also displayed by the API docs.
 
 ## Live Hosted Site
 
-[https://lexi.sonnguyen.online/docs]{https://lexi.sonnguyen.online/docs)
+Interactive API docs for review and testing:
+
+[https://lexi.sonnguyen.online/docs](https://lexi.sonnguyen.online/docs)
 
 ## Notes on Searching Cases
 
@@ -30,7 +32,14 @@ All endpoints require 3 parameters in request body:
 The date range is set from start of this year (Jagriti UI's default) to current day.
 
 The `document_link` field is always set to an empty string, since Jagriti API only returns the document as
-embedded Base64-encoded string.
+embedded Base64-encoded string instead of any URL.
 
-##  
+## How to Run Locally
+
+- Make sure you have Python 3.12+ installed
+- Clone this repo
+- Create and activate a virtual environment
+- Install dependencies: `pip install -r requirements.txt`
+- Run FastAPI in dev mode: `fastapi dev`
+- Open [http://localhost:8000/docs](http://localhost:8000/docs) in browser to view API docs and run tests
 

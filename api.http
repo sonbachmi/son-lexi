@@ -16,7 +16,7 @@ Content-Type: application/json
 {
   "state_name": "Karnataka",
   "commission_name": "Bangalore 1st & Rural Additional",
-  "query2": "DC/AB4/525/CC/89/2025"
+  "query": "DC/AB4/525/CC/89/2025"
 }
 
 ### POST search cases by complainant
@@ -26,7 +26,7 @@ Content-Type: application/json
 {
   "state_name": "Karnataka",
   "commission_name": "Bangalore 1st & Rural Additional",
-  "query": "Reddy"
+  "query": ""
 }
 
 ### POST search cases by complainant advocate
@@ -66,7 +66,7 @@ Content-Type: application/json
 {
   "state_name": "Andhra Pradesh",
   "commission_name": "Anantapur",
-  "query": "housing"
+  "query": "advertising"
 }
 
 ### POST search cases by judge
@@ -76,5 +76,5 @@ Content-Type: application/json
 {
   "state_name": "Andhra Pradesh",
   "commission_name": "Anantapur",
-  "query": "sree"
+  "query": ""
 }
